@@ -6,10 +6,12 @@
 public class MusicPlaylist {
     private String[] songs;
     private int count;  // number of songs currently in playlist
-    
+    private int capacity;
+
     public MusicPlaylist(int capacity) {
         songs = new String[capacity];
         count = 0;
+        this.capacity = capacity;
     }
     
     // Add song to the end of playlist
@@ -29,6 +31,10 @@ public class MusicPlaylist {
     public int size() {
         return count;
     }
+
+    public int capacity() {
+        return capacity;
+    }
     
     // Double the size of the array when it gets full
     private void resizeArray() {
@@ -36,6 +42,15 @@ public class MusicPlaylist {
         // 1. Create a new array twice the size of the current one
         // 2. Copy all songs from the old array to the new array
         // 3. Update the songs reference to point to the new array
+        int i = 0;
+        String[] temp = new String[capacity * 2];
+        for(String s : songs){
+            temp[i] = s;
+            i++;
+        }
+        songs = temp;
+        capacity = 2 * capacity;
+
     }
     
     // INSERT song at specific position
@@ -47,6 +62,14 @@ public class MusicPlaylist {
         // 2. Shift all songs from position to the right
         // 3. Place the new song at the position
         // 4. Increment count
+        if(count >= songs.length)
+            resizeArray();
+
+        for(int i = count; i > position; i--){
+            songs[i] = songs[i-1];
+        }
+        songs[position] = title;
+        count++;
     }
     
     // REMOVE song at specific position
@@ -56,6 +79,13 @@ public class MusicPlaylist {
         // TODO: Implement remove
         // 1. Shift all songs after position to the left
         // 2. Decrement count
+        if(position < songs.length){
+            for(int i = position; i < count; i++){
+                songs[i] = songs[i+1];
+            }
+            songs[songs.length - 1] = null;
+            count--;
+        }
     }
     
     // Display all songs
@@ -79,7 +109,7 @@ public class MusicPlaylist {
         System.out.println("Original playlist:");
         myPlaylist.displayPlaylist();
         
-        // Test insert
+        //Test insert
         System.out.println("\nAfter inserting 'Bohemian Rhapsody' at position 2:");
         myPlaylist.insertSong(2, "Bohemian Rhapsody");
         myPlaylist.displayPlaylist();
@@ -88,5 +118,6 @@ public class MusicPlaylist {
         System.out.println("\nAfter removing song at position 1:");
         myPlaylist.removeSong(1);
         myPlaylist.displayPlaylist();
+
     }
 }
