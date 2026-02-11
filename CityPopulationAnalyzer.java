@@ -28,6 +28,9 @@ public class CityPopulationAnalyzer {
         // TODO: Initialize cityNames array with INITIAL_CAPACITY
         // TODO: Initialize populations array with INITIAL_CAPACITY
         // TODO: Set count to 0
+        cityNames = new String[INITIAL_CAPACITY];
+        populations = new double[INITIAL_CAPACITY];
+        count = 0;
     }
     
     /**
@@ -41,12 +44,14 @@ public class CityPopulationAnalyzer {
      * ... (alternating pattern)
      * 
      * @param filename the path to the data file
+     * @throws FileNotFoundException 
      * @throws IOException, InputMismatchException if the file cannot be found or read
      */
-    public void readAndSortData(String filename)  {
+    public void readAndSortData(String filename) throws IOException  {
         // TODO: Create a File object with the filename
         // TODO: Create a Scanner to read from the file
-        
+        Scanner scanner = new Scanner(new File(filename));
+
         // TODO: Read pairs of city name and population
         // HINT: Use a while loop with scanner.hasNextLine()
         // HINT: Read city name first, then check if there's a population line
@@ -54,7 +59,12 @@ public class CityPopulationAnalyzer {
         // HINT: Call insertSorted() for each city/population pair
         // HINT: If array is full, call resizeArrays()
         // TODO: Close the scanner
-        
+
+        while(scanner.hasNextLine()){
+            String name = scanner.nextLine();
+            Double pop = Double.parseDouble(scanner.nextLine());
+            insertSorted(name, pop);
+        }
         
         System.out.println("Successfully read " + count + " cities from " + filename);
     }
@@ -72,13 +82,28 @@ public class CityPopulationAnalyzer {
         // HINT: Loop through existing elements to find where this population should go
         // HINT: We want highest populations first, so insert before any smaller population
         
+        if(count >= cityNames.length)
+            resizeArrays();
+
+        int insert = count;
+        for(int i = 0; i < count; i++){
+            if(population > populations[i])
+                insert = i;
+        }
+
         // TODO: Shift elements to the right to make room
         // HINT: Start from 0 and move to correct position
         // HINT: Move both cityNames and populations arrays
+        for(int i = count; i > insert; i--){
+            populations[i] = populations[i-1];
+            cityNames[i] = cityNames[i-1];
+        }
         
         // TODO: Insert the new city and population at the correct position
-        
+        populations[insert] = population;
+        cityNames[insert] = cityName;
         // TODO: Increment count
+        count++;
     }
     
     /**
@@ -86,12 +111,18 @@ public class CityPopulationAnalyzer {
      */
     private void resizeArrays() {
         // TODO: Create new arrays twice the current size
-        
+        String[] temp = new String[populations.length * 2];
+        double[] temp2 = new double[populations.length * 2];
         // TODO: Copy all existing data to the new arrays
         // HINT: Use a loop from 0 to count
-        
+        for(int i = 0 ; i < populations.length; i++){
+            temp2[i] = populations[i];
+            temp[i] = cityNames[i];
+        }
         // TODO: Update the instance variables to point to the new arrays
-        
+        populations = temp2;
+        cityNames = temp;
+
         System.out.println("Arrays resized to capacity: " + cityNames.length);
     }
     
@@ -101,6 +132,9 @@ public class CityPopulationAnalyzer {
     public void displayTopCities(int n) {
         System.out.println("\n=== Top " + n + " Cities by Population ===");
         // TODO go for it
+        for(int i = 0; i < n; i++){
+            System.out.println(cityNames[i] + " " + populations[i]);
+        }
     }
     
         
@@ -109,7 +143,7 @@ public class CityPopulationAnalyzer {
      */
     public int getCount() {
         //TODO
-        return -1;
+        return count;
     }
 
     /**
@@ -117,7 +151,7 @@ public class CityPopulationAnalyzer {
      */
     public double getLargestPopulation() {
         //TODO
-        return -1;
+        return populations[0];
     }
 
     /**
@@ -125,7 +159,7 @@ public class CityPopulationAnalyzer {
      */
     public String getCityWithLargestPopulation() {
         //TODO
-        return "";
+        return cityNames[0];
     }
 
     /**
@@ -133,7 +167,7 @@ public class CityPopulationAnalyzer {
      */
     public double getSmallestPopulation() {
         //TODO
-        return -1;
+        return populations[count - 1];
     }
 
     /**
@@ -141,7 +175,7 @@ public class CityPopulationAnalyzer {
      */
     public String getCityWithSmallestPopulation() {
         //TODO
-        return "";
+        return cityNames[count - 1];
     }
 
     /**
@@ -151,7 +185,11 @@ public class CityPopulationAnalyzer {
      */
     public double findPopulationOfCity(String cityName) {
         // TODO
-        return -1;
+        int i = 0;
+        while(!cityNames[i].equals(cityName)){
+            i++;
+        }
+        return populations[i];
     }
 
     /**
@@ -162,7 +200,27 @@ public class CityPopulationAnalyzer {
      */
     public boolean containsCityName(String cityName) {
         // TODO
-        return false;
+        rearrange();
+
+        int jump = count / 2;
+        while(!cityName.equals(cityNames[jump])){
+            jump = 
+        }
+        return true;
+    }
+
+    public void rearrange(){
+        for(int i = 0; i < count - 1; i++){
+            for(int j = 1; j < count; j++)
+            if(cityNames[i].compareTo(cityNames[j]) > 0){
+                String temp = cityNames[i];
+                cityNames[i] = cityNames[j];
+                cityNames[j] = temp;
+                double temp2 = populations[i];
+                populations[i] = populations[j];
+                populations[j] = temp2;
+            }
+        }
     }
 
     /**
@@ -171,7 +229,10 @@ public class CityPopulationAnalyzer {
      */
     public double averagePopulationSize() {
         // TODO
-        return 0;
+        double sum = 0;
+        for(double d : populations)
+            sum += d;
+        return sum/count;
     }
     
     
